@@ -1,0 +1,15 @@
+{
+	"videoFormats": [
+		".mp4",
+		".mkv",
+		".avi",
+		".wmv",
+		".mpg",
+		".mpeg"
+	],
+	"inputFolder" : "/media/u01/transmission/completes",
+	"outputFolder" : "/media/u01/media",
+	"seriesFormat" : "TV Shows/{name}/Season {season}/{name} - S{season}E{episode} - {title}",
+	"action": "move",
+	"logLevel" : "debug"
+}
