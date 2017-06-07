@@ -9,78 +9,110 @@ const logger = require('winston');
 
 const tvdb = new TVDB('436CB4A29DEF63C1');
 
+function leftPad(value, size, caracter){
+	if (!caracter){
+		return value;
+	}
+	let returnValue = value + '';
+	for (; returnValue.length < size;) {
+		returnValue = caracter + returnValue;
+	}
+	return returnValue;
+}
+
 function moveFile(fileData) {
-	console.log('Moving file: ', fileData);
+	logger.log('info', 'Move file...');
 	let finalFile = config.seriesFormat
 		.replace(/\{name\}/g, fileData.name)
-		.replace(/\{season\}/g, fileData.season)
-		.replace(/\{episode\}/g, fileData.episode)
+		.replace(/\{season\}/g, leftPad(fileData.season, 2, '0'))
+		.replace(/\{episode\}/g, leftPad(fileData.episode, 2, '0'))
 		.replace(/\{title\}/g, fileData.title);
 	finalFile = finalFile + fileData.ext;
-	console.log(finalFile);
 	let destFile = path.join(config.outputFolder, finalFile);
-	console.log(destFile);
-	createFolderIfNotExist(destFile);
+	if (fs.existsSync(destFile)){
+		logger.log('warn', 'Destination file already exist, %s', destFile);
+		if (typeof fileData.callback === 'function'){
+			fileData.callback(destFile);
+		}
+		return;
+	}
+	logger.log('info', 'Moving file, action is: %s, source: %s, destination: %s',
+		config.action, fileData.file, destFile);
+
+	files.createFolderIfNotExist(destFile);
 	if (!fs.existsSync(destFile)) {
 		if (config.action === 'copy') {
 			files.copyFile(fileData.file, destFile);
 		} else {
 			fs.renameSync(fileData.file, destFile);
+			if (typeof fileData.callback === 'function'){
+				fileData.callback(destFile);
+			}
 		}
 	}
 }
 
 function findEpisodeData(fileData) {
+	logger.log('info', 'Find epidode data name: %s, season: %s, episode: %s',
+		fileData.name, fileData.season, fileData.episode);
 	tvdb.getEpisodesBySeriesId(fileData.tvdbId)
 		.then(response => {
-			//console.log(response)
 			response.forEach(function (ep) {
 				if (ep.airedSeason === fileData.season &&
 					ep.airedEpisodeNumber === fileData.episode) {
 					fileData['title'] = ep.episodeName;
-					console.log(ep);
+					logger.log('info', 'Title for %s S%sE%s is %s',
+						fileData.name, fileData.season, fileData.episode, ep.episodeName);
 					moveFile(fileData);
 				}
-			}, this);
-		})
-		.catch(error => {
-			console.log(error);
+			});
+		}).catch(error => {
+			logger.log('error', 'findEpisodeData - error', error);
 		});
 }
 
-function findTvdbId(fileData) {
+function findSerieTvdb(fileData) {
+	logger.log('info', 'Quering TVDB for name: %s', fileData.name);
 	tvdb.getSeriesByName(fileData.name)
 		.then(response => {
+			if (!response[0]){
+				logger.log('info', 'Not found serie in TVDB with name: %s', fileData.name);
+			}
 			let tvdbId = response[0].id;
+			let name = response[0].seriesName;
 			if (tvdbId) {
+				logger.log('info', 'Serie with name %s use tvdbid: %s', name, tvdbId);
 				fileData['tvdbId'] = tvdbId;
+				fileData['name'] = name;
 				db.saveTvdbId(fileData);
 				findEpisodeData(fileData);
 			}
-		})
-		.catch(error => {
-			console.log(error);
+		}).catch(error => {
+			logger.log('error', 'getSeriesByName - error', error);
 		});
 }
 
 
-function doIt() {
+function doIt(callback) {
 	logger.log('info', 'Organize doIt begin...');
 	let filesToProcess = files.readFiles(config.inputFolder, config.videoFormats);
 	logger.log('info', 'Total files: %s', filesToProcess.length);
 	filesToProcess.forEach(function (videoPath) {
+		logger.log('debug', 'Processing file: %s', videoPath);
 		let videoInfo = path.parse(videoPath);
 		let fileData = nameParser.parseFileName(videoInfo.name);
 		fileData['file'] = videoPath;
 		fileData['ext'] = videoInfo.ext;
-		let tvdbId = db.getTvdbId(fileData);
-		if (tvdbId) {
-			fileData['tvdbId'] = tvdbId;
+		fileData['callback'] = callback;
+		let serie = db.getSerieBySearchKey(fileData.searchKey);
+		if (serie && serie.tvdbId) {
+			logger.log('debug', 'Local data found for series: %s', serie.name);
+			fileData['name'] = serie.name;
+			fileData['tvdbId'] = serie.tvdbId;
 			findEpisodeData(fileData);
 		} else {
-			findTvdbId(fileData);
+			findSerieTvdb(fileData);
 		}
-		console.log(fileData);
 	});
 }
 

@@ -8,6 +8,8 @@
   "dependencies": {
     "better-sqlite3": "^2.3.3",
     "node-tvdb": "^3.2.0",
+    "opensubtitles-api": "^4.0.0-rc2",
+    "request": "^2.81.0",
     "winston": "^2.3.1"
   },
   "devDependencies": {

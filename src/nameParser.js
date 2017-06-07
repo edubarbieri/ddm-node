@@ -1,4 +1,4 @@
-const regExp = new RegExp(/S(\d{2})E(\d{2})/);
+const regExp = new RegExp(/[sS](\d{2})[eE](\d{2})/);
 
 function parseFileName(fileName) {
 	//troca os pontos por space

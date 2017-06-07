@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const logger = require('winston');
 
 function readFiles(dir, allowedFormats, filterFunction) {
 	let filelist = [];
@@ -14,7 +15,7 @@ function readFiles(dir, allowedFormats, filterFunction) {
 			let fileInfo = path.parse(fullPath);
 			// //verifica se o arquivos é um video e se ja não tem legendas
 			if (allowedFormats.indexOf(fileInfo.ext) > -1 &&
-				(typeof filterFunction !== 'function' || filterFunction())) {
+				(typeof filterFunction !== 'function' || filterFunction(fileInfo))) {
 				filelist.push(fullPath);
 			}
 		}
@@ -22,16 +23,18 @@ function readFiles(dir, allowedFormats, filterFunction) {
 	return filelist;
 };
 
-function copyFile(src, dest) {
+function copyFile(src, dest, callback) {
 	console.log('Copyng file: ' + src + ' To: ' + dest);
 	let readStream = fs.createReadStream(src);
 
 	readStream.once('error', (err) => {
-		console.log(err);
+		logger.log('error', 'Error copyng file', err);
 	});
 
 	readStream.once('end', () => {
-		console.log('done copying');
+		if (typeof callback === 'function'){
+			callback();
+		}
 	});
 
 	readStream.pipe(fs.createWriteStream(dest));

@@ -1,4 +1,5 @@
 const Database = require('better-sqlite3');
+const logger = require('winston');
 
 const sqlite = new Database('ddm.db');
 const initialSql = [
@@ -27,6 +28,8 @@ initialSql.forEach(sql => {
 
 function insertSerie(data) {
 	try {
+		logger.log('debug', 'Insert serie with name %s, tvdbid: %s, searchKey : %s',
+		data.name, data.tvdbId, data.searchKey);
 		let stmt = sqlite.prepare('INSERT INTO serie(name, tvdbId, searchKey)' +
 			' VALUES (:name, :tvdbId, :searchKey)');
 		stmt.run(data);
@@ -38,13 +41,14 @@ function insertSerie(data) {
 }
 
 function getSerieBySearchKey(searchKey){
+	logger.log('debug', 'GetSerieBySearchKey searchKey : %s', searchKey);
 	return sqlite.prepare('SELECT * from  serie where searchKey = ?').get(searchKey);
 }
 
 function getTvdbId(data) {
 	let row = getSerieBySearchKey(data.searchKey);
 	if (row && row.tvdbId) {
-		return row.tvdbId;
+		return row;
 	}
 	return null;
 }
@@ -52,8 +56,10 @@ function getTvdbId(data) {
 function saveTvdbId(data){
 	let row = getSerieBySearchKey(data.searchKey);
 	if (row) {
+		logger.log('debug', 'Update serie with name %s, tvdbid: %s, searchKey : %s',
+		data.name, data.tvdbId, data.searchKey);
 		//update
-		let stmt = sqlite.prepare('update serie set tvdbId = :tvdbId' +
+		let stmt = sqlite.prepare('update serie set tvdbId = :tvdbId, name = :name' +
 			' WHERE searchKey = :searchKey');
 		stmt.run(data);
 	} else {
@@ -65,5 +71,6 @@ function saveTvdbId(data){
 
 module.exports = {
 	getTvdbId : getTvdbId,
-	saveTvdbId : saveTvdbId
+	saveTvdbId : saveTvdbId,
+	getSerieBySearchKey : getSerieBySearchKey
 };

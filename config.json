@@ -8,8 +8,18 @@
 		".mpeg"
 	],
 	"inputFolder" : "/media/u01/transmission/completes",
-	"outputFolder" : "/media/u01/media",
-	"seriesFormat" : "TV Shows/{name}/Season {season}/{name} - S{season}E{episode} - {title}",
+	"outputFolder" : "/media/u01/media/TV Shows",
+	"seriesFormat" : "{name}/Season {season}/{name} - S{season}E{episode} - {title}",
 	"action": "move",
-	"logLevel" : "debug"
+	"logLevel" : "debug",
+
+	"opensubtitles": {
+		"useragent": "Nodejs",
+		"username": "email@gmail.com",
+		"password": "password"
+	},
+	"__language" : "Idioma das legendas",
+	"language": "pob",
+	"__limit" : "Número de legendas baixadas na pesquisa por nome",
+	"limit": "3"
 }
