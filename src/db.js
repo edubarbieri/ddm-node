@@ -12,12 +12,10 @@ const initialSql = [
 		)
 	`,
 	`
-		CREATE TABLE IF NOT EXISTS episode (
+		CREATE TABLE IF NOT EXISTS feed (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			season INTEGER,
-			episode INTEGER,
-			tvdbId INTEGER,
-			dw BOOLEAN DEFAULT true
+			episodeId INTEGER,
+			title TEXT
 		)
 	`
 ];
@@ -35,7 +33,7 @@ function insertSerie(data) {
 		stmt.run(data);
 		return true;
 	} catch (error) {
-		console.log('Error', error);
+		logger.log('error', 'insertSerie - error', episodeId);
 		return false;
 	}
 }
@@ -67,10 +65,28 @@ function saveTvdbId(data){
 	}
 }
 
+function getFeed(episodeId){
+	logger.log('debug', 'getFeed episodeId : %s', episodeId);
+	return sqlite.prepare('SELECT * from feed where episodeId = ?').get(episodeId);
+}
 
+function insertFeed(feed) {
+	try {
+		logger.log('debug', 'Insert feed with ', feed.title);
+		let stmt = sqlite.prepare('INSERT INTO feed(episodeId, title)' +
+			' VALUES (:episodeId, :title)');
+		stmt.run(feed);
+		return true;
+	} catch (error) {
+		logger.log('error', 'insertFeed - error', error);
+		return false;
+	}
+}
 
 module.exports = {
 	getTvdbId : getTvdbId,
 	saveTvdbId : saveTvdbId,
-	getSerieBySearchKey : getSerieBySearchKey
+	getSerieBySearchKey : getSerieBySearchKey,
+	getFeed : getFeed,
+	insertFeed : insertFeed
 };

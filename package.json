@@ -10,7 +10,9 @@
     "node-tvdb": "^3.2.0",
     "opensubtitles-api": "^4.0.0-rc2",
     "request": "^2.81.0",
-    "winston": "^2.3.1"
+    "transmission": "^0.4.9",
+    "winston": "^2.3.1",
+    "xml2js": "^0.4.17"
   },
   "devDependencies": {
     "eslint": "^3.19.0"

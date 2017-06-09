@@ -21,5 +21,12 @@
 	"__language" : "Idioma das legendas",
 	"language": "pob",
 	"__limit" : "Número de legendas baixadas na pesquisa por nome",
-	"limit": "3"
+	"limit": "3",
+	"feedUrl": "",
+    "transmission": {
+		"host": "localhost",
+  		"port": 9091,
+        "username": "transmission",
+        "password": "transmission"
+    }
 }
