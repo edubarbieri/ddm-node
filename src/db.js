@@ -1,7 +1,8 @@
 const Database = require('better-sqlite3');
 const logger = require('winston');
+const path = require('path');
 
-const sqlite = new Database('ddm.db');
+const sqlite = new Database(path.join(__dirname, '..','ddm.db'));
 const initialSql = [
 	`
 		CREATE TABLE IF NOT EXISTS serie (
