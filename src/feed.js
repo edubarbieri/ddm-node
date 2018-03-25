@@ -28,15 +28,18 @@ function readFeed(callback) {
 				logger.log('info', 'parsing feed data...');
 				let feedData = [];
 				let items = result.rss.channel[0].item;
-				items.forEach(function (item) {
-					feedData.push({
-						title: item.title[0],
-						showId: item['tv:show_id'][0],
-						showName: item['tv:show_name'][0],
-						episodeId: item['tv:episode_id'][0],
-						link: item.link[0]
+				if(items){
+					items.forEach(function (item) {
+						feedData.push({
+							title: item.title[0],
+							showId: item['tv:show_id'][0],
+							showName: item['tv:show_name'][0],
+							episodeId: item['tv:episode_id'][0],
+							link: item.link[0]
+						});
 					});
-				});
+				}
+
 				callback(null, feedData);
 			});
 		});

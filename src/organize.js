@@ -57,15 +57,24 @@ function findEpisodeData(fileData) {
 		fileData.name, fileData.season, fileData.episode);
 	tvdb.getEpisodesBySeriesId(fileData.tvdbId)
 		.then(response => {
+			//logger.log('debug', response);
+			let withData = false;
 			response.forEach(function (ep) {
 				if (ep.airedSeason === fileData.season &&
 					ep.airedEpisodeNumber === fileData.episode) {
 					fileData['title'] = ep.episodeName;
 					logger.log('info', 'Title for %s S%sE%s is %s',
 						fileData.name, fileData.season, fileData.episode, ep.episodeName);
+					withData = true;
 					moveFile(fileData);
 				}
 			});
+			if (!withData){
+				fileData['title'] = '';
+				logger.log('info', 'Coul not find title  for episode %s S%sE%s',
+						fileData.name, fileData.season, fileData.episode);
+				moveFile(fileData);
+			}
 		}).catch(error => {
 			logger.log('error', 'findEpisodeData - error', error);
 		});

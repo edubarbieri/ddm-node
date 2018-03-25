@@ -1,31 +1,31 @@
 {
-	"videoFormats": [
-		".mp4",
-		".mkv",
-		".avi",
-		".wmv",
-		".mpg",
-		".mpeg"
-	],
-	"inputFolder" : "/media/u01/transmission/completes",
-	"outputFolder" : "/media/u01/media/TV Shows",
-	"seriesFormat" : "{name}/Season {season}/{name} - S{season}E{episode} - {title}",
-	"action": "move",
-	"logLevel" : "debug",
+    "videoFormats": [
+        ".mp4",
+        ".mkv",
+        ".avi",
+        ".wmv",
+        ".mpg",
+        ".mpeg"
+    ],
+    "inputFolder" : "/u01/transmission/completes",
+    "outputFolder" : "/u01/media/TV Shows",
+    "seriesFormat" : "{name}/Season {season}/{name} - S{season}E{episode} - {title}",
+    "action": "move",
+    "logLevel" : "debug",
 
-	"opensubtitles": {
-		"useragent": "Nodejs",
-		"username": "email@gmail.com",
-		"password": "password"
-	},
-	"__language" : "Idioma das legendas",
-	"language": "pob",
-	"__limit" : "Número de legendas baixadas na pesquisa por nome",
-	"limit": "3",
-	"feedUrl": "",
+    "opensubtitles": {
+        "useragent": "Nodejs",
+        "username": "youremail@gmail.com",
+        "password": "senha"
+    },
+    "__language" : "Idioma das legendas",
+    "language": "pob",
+    "__limit" : "Número de legendas baixadas na pesquisa por nome",
+    "limit": "3",
+    "feedUrl": "",
     "transmission": {
-		"host": "localhost",
-  		"port": 9091,
+        "host": "localhost",
+        "port": 9091,
         "username": "transmission",
         "password": "transmission"
     }
