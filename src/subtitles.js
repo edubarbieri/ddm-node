@@ -113,7 +113,19 @@ function doIt() {
 	});
 }
 
+function subtitleFolder(folder){
+	logger.log('info', 'Subtitles subtitleFolder begin...');
+	let filesToProcess = files.readFiles(folder, config.videoFormats, (fileInfo) => {
+		return !fs.existsSync(path.join(fileInfo.dir, fileInfo.name + '.srt'));
+	});
+	logger.log('info', 'Total files to search subtitle: %s', filesToProcess.length);
+	filesToProcess.forEach(filePath => {
+		searchSubtitle(filePath);
+	});
+}
+
 module.exports = {
 	doIt : doIt,
-	searchSubtitle : searchSubtitle
+	searchSubtitle : searchSubtitle,
+	subtitleFolder : subtitleFolder
 };

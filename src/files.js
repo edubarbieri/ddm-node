@@ -8,19 +8,21 @@ function readFiles(dir, allowedFormats, filterFunction) {
 	let fs = require('fs');
 	let files = fs.readdirSync(dir);
 	for (let file of files) {
-		let fullPath = path.join(dir, file);
-		if (fs.statSync(fullPath).isDirectory()) {
-			filelist = [...filelist, ...readFiles(fullPath, allowedFormats, filterFunction)];
-		} else {
-			let fileInfo = path.parse(fullPath);
-			// //verifica se o arquivos é um video e se ja não tem legendas
-			if (allowedFormats.indexOf(fileInfo.ext) > -1 &&
-				(typeof filterFunction !== 'function' || filterFunction(fileInfo))) {
-				filelist.push(fullPath);
+		if (!file.startsWith('.')) {
+			let fullPath = path.join(dir, file);
+			if (fs.statSync(fullPath).isDirectory()) {
+				filelist = [...filelist, ...readFiles(fullPath, allowedFormats, filterFunction)];
+			} else {
+				let fileInfo = path.parse(fullPath);
+				// //verifica se o arquivos é um video e se ja não tem legendas
+				if (allowedFormats.indexOf(fileInfo.ext) > -1 &&
+					(typeof filterFunction !== 'function' || filterFunction(fileInfo))) {
+					filelist.push(fullPath);
+				}
 			}
 		}
 	};
-	return filelist;
+	return filelist;f
 };
 
 function copyFile(src, dest, callback) {
@@ -32,7 +34,7 @@ function copyFile(src, dest, callback) {
 	});
 
 	readStream.once('end', () => {
-		if (typeof callback === 'function'){
+		if (typeof callback === 'function') {
 			callback();
 		}
 	});
@@ -60,6 +62,6 @@ function createFolderIfNotExist(destFile) {
 
 module.exports = {
 	readFiles: readFiles,
-	copyFile : copyFile,
-	createFolderIfNotExist : createFolderIfNotExist
+	copyFile: copyFile,
+	createFolderIfNotExist: createFolderIfNotExist
 };

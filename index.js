@@ -35,6 +35,11 @@ if (arg === 'feed') {
 } else if (arg === 'subtitle') {
 	logger.log('info', 'Running only subtitle');
 	subtitles.doIt();
+} else if (arg === 'subtitleFolder') {
+	logger.log('info', 'Running only subtitleFolder');
+	let folder = process.argv.slice(2)[1] || '';
+	console.log('Using arg folder' + folder);
+	subtitles.subtitleFolder(folder);
 } else {
 	logger.log('info', 'Running all');
 	feed();
